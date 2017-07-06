@@ -34,4 +34,5 @@ dependencies {
     compile 'com.lzy.net:okgo:3.0.2'
     compile 'com.lzy.net:okrx2:2.0.2'
     compile 'com.lzy.net:okserver:2.0.2'
+    compile 'com.orhanobut:logger:2.1.1'
 }

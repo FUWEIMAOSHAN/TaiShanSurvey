@@ -1,5 +1,6 @@
 package com.dct.survey.taishan.ui.record;
 
+import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseFragment;
 
 /**
@@ -11,7 +12,7 @@ import com.dct.survey.taishan.base.BaseFragment;
 public class RecordFragment extends BaseFragment {
     @Override
     protected int getLayout() {
-        return 0;
+        return R.layout.fragment_record;
     }
 
     @Override

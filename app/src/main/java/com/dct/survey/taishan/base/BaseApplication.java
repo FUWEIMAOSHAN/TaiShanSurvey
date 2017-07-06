@@ -1,6 +1,9 @@
 package com.dct.survey.taishan.base;
 
 import android.app.Application;
+import android.content.Context;
+
+import com.lzy.okgo.OkGo;
 
 /**
  * 创建：Android
@@ -10,9 +13,31 @@ import android.app.Application;
 
 public class BaseApplication extends Application {
 
+    private Context applicationContext;
+    private static  BaseApplication baseApplication;
+
+    public BaseApplication() {}
+    /**
+     *  实例化一次
+     */
+    public synchronized static BaseApplication getInstance() {
+        if (null == baseApplication) {
+            baseApplication = new BaseApplication();
+        }
+        return baseApplication;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        applicationContext = getApplicationContext();
         OkGo.getInstance().init(this);
+    }
+
+    /**
+     * 获取全局的上下文
+     */
+    public Context getContext() {
+        return applicationContext;
     }
 }

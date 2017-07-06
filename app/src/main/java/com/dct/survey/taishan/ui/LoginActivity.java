@@ -5,14 +5,19 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.dct.survey.taishan.R;
+import com.dct.survey.taishan.api.Urls;
 import com.dct.survey.taishan.base.BaseActivity;
+import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
 import com.dct.survey.taishan.utils.ToastUtil;
-import com.dct.survey.taishan.view.materialedittext.MaterialEditText;
+import com.dct.survey.taishan.view.PowerfulEditText;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
+import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-
 /**
  * 创建：Android
  * 日期：2017/7/6 14:34
@@ -21,9 +26,9 @@ import butterknife.OnClick;
 
 public class LoginActivity extends BaseActivity {
     @BindView(R.id.name)
-    MaterialEditText name;
+    PowerfulEditText name;
     @BindView(R.id.password)
-    MaterialEditText password;
+    PowerfulEditText password;
     @BindView(R.id.login_btn)
     Button loginBtn;
 
@@ -80,9 +85,37 @@ public class LoginActivity extends BaseActivity {
      */
     private void doLogin() {
         if (!NetUtil.isConnected(this)){
-            ToastUtil.showShort(this, "网络未连接");
+            ToastUtil.showShort(this, "网连接未连接");
         }else {
+            String name = this.name.getText().toString().trim();
+            String password = this.password.getText().toString().trim();
+            OkGo.<String>post(Urls.LoginCheck)
+                    .params("UserName", name, true)
+                    .params("PassWord", Md5Util.getMD5(password), true)
+                    .tag(this)
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onSuccess(Response<String> response) {
+                            String result = response.body().toString();
+                            Logger.e(result);
+                        }
 
+                        @Override
+                        public void onError(Response<String> response) {
+                            super.onError(response);
+                            ToastUtil.showShort(LoginActivity.this, "网络不给力");
+                        }
+                    });
         }
+    }
+
+    /**
+     * 一行代码实现Android软键盘与EditText的交互
+     * @return
+     */
+    @Override
+    public int[] hideSoftByEditViewIds() {
+        int[] ids = {R.id.name, R.id.password};
+        return ids;
     }
 }
