@@ -1,23 +1,31 @@
 package com.dct.survey.taishan.ui;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.dct.survey.taishan.R;
-import com.dct.survey.taishan.api.Urls;
 import com.dct.survey.taishan.base.BaseActivity;
+import com.dct.survey.taishan.bean.BaseResult;
+import com.dct.survey.taishan.http.RetrofitHttp;
 import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
 import com.dct.survey.taishan.utils.ToastUtil;
 import com.dct.survey.taishan.view.PowerfulEditText;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
-import com.lzy.okgo.model.Response;
+import com.dct.survey.taishan.view.loadingdialog.LoadingDialog;
 import com.orhanobut.logger.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.observers.DefaultObserver;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * 创建：Android
  * 日期：2017/7/6 14:34
@@ -31,6 +39,7 @@ public class LoginActivity extends BaseActivity {
     PowerfulEditText password;
     @BindView(R.id.login_btn)
     Button loginBtn;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected int getLayout() {
@@ -87,23 +96,35 @@ public class LoginActivity extends BaseActivity {
         if (!NetUtil.isConnected(this)){
             ToastUtil.showShort(this, "网连接未连接");
         }else {
-            String name = this.name.getText().toString().trim();
-            String password = this.password.getText().toString().trim();
-            OkGo.<String>post(Urls.LoginCheck)
-                    .params("UserName", name, true)
-                    .params("PassWord", Md5Util.getMD5(password), true)
-                    .tag(this)
-                    .execute(new StringCallback() {
+            loadingDialog = new LoadingDialog(this);
+            loadingDialog.setInterceptBack(false);
+            loadingDialog.setLoadingText("正在登陆中...");
+            loadingDialog.show();
+
+            String username = name.getText().toString().trim();
+            String psd = password.getText().toString().trim();
+            Map<String, String> map = new HashMap<>();
+            map.put("UserName", username);
+            map.put("PassWord", Md5Util.getMD5(psd));
+            Logger.e(Md5Util.getMD5(psd));
+            RetrofitHttp.getRetrofit().login(map)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DefaultObserver<BaseResult>() {
                         @Override
-                        public void onSuccess(Response<String> response) {
-                            String result = response.body().toString();
-                            Logger.e(result);
+                        public void onNext(@NonNull BaseResult baseResult) {
+                            Logger.d(baseResult.isSuccess());
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         }
 
                         @Override
-                        public void onError(Response<String> response) {
-                            super.onError(response);
-                            ToastUtil.showShort(LoginActivity.this, "网络不给力");
+                        public void onError(@NonNull Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            loadingDialog.close();
                         }
                     });
         }

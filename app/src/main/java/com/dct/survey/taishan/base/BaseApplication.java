@@ -3,7 +3,6 @@ package com.dct.survey.taishan.base;
 import android.app.Application;
 import android.content.Context;
 
-import com.lzy.okgo.OkGo;
 
 /**
  * 创建：Android
@@ -31,7 +30,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         applicationContext = getApplicationContext();
-        OkGo.getInstance().init(this);
+
     }
 
     /**

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.amap.api.maps.MapView
+            android:id="@+id/map"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true" />
+
+        <RelativeLayout
+            android:id="@+id/search_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="20dp">
+
+            <AutoCompleteTextView
+                android:focusableInTouchMode="true"
+                android:id="@+id/map_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/edit_style"
+                android:completionThreshold="1"
+                android:gravity="center_vertical"
+                android:hint="搜索调查点"
+                android:paddingLeft="35dp"
+                android:paddingRight="110dp"
+                android:singleLine="true"
+                android:textColor="@color/colorMaintext"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:layout_width="@dimen/content_item_height"
+                android:layout_height="match_parent"
+                android:padding="@dimen/content_padding"
+                android:src="@drawable/search" />
+
+
+            <RelativeLayout
+                android:id="@+id/map_select_layout"
+                android:layout_width="@dimen/map_select_layout_width"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true">
+
+                <TextView
+                    android:id="@+id/select_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_toRightOf="@+id/imageView2"
+                    android:gravity="center"
+                    android:text="地图选点"
+                    android:textSize="@dimen/sys_sp3" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="15dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/map_select" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/traffic"
+            android:layout_width="@dimen/map_img_wh"
+            android:layout_height="@dimen/map_img_wh"
+            android:layout_alignRight="@+id/search_layout"
+            android:layout_below="@+id/search_layout"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/lukuang" />
+
+        <ImageView
+            android:id="@+id/weixing"
+            android:layout_width="@dimen/map_img_wh"
+            android:layout_height="@dimen/map_img_wh"
+            android:layout_alignRight="@+id/traffic"
+            android:layout_below="@+id/traffic"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/map_weixing" />
+
+        <ImageView
+            android:id="@+id/road"
+            android:layout_width="@dimen/map_img_wh"
+            android:layout_height="@dimen/map_img_wh"
+            android:layout_alignRight="@+id/traffic"
+            android:layout_below="@+id/weixing"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/route" />
+
+        <ImageView
+            android:id="@+id/people"
+            android:layout_width="@dimen/map_img_wh"
+            android:layout_height="@dimen/map_img_wh"
+            android:layout_alignRight="@+id/traffic"
+            android:layout_below="@+id/road"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/people" />
+
+        <ImageView
+            android:id="@+id/refresh"
+            android:layout_width="@dimen/map_img_wh"
+            android:layout_height="@dimen/map_img_wh"
+            android:layout_alignRight="@+id/traffic"
+            android:layout_below="@+id/people"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/refresh" />
+
+        <ImageView
+            android:id="@+id/lock"
+            android:layout_width="@dimen/map_img_wh"
+            android:layout_height="@dimen/map_img_wh"
+            android:layout_alignRight="@+id/traffic"
+            android:layout_below="@+id/refresh"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/locked"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/location_pan" />
+    </RelativeLayout>
+
+</LinearLayout>

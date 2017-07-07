@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 
+import com.dct.survey.taishan.BuildConfig;
 import com.dct.survey.taishan.utils.KeyBoardUtils;
 import com.dct.survey.taishan.utils.StatusBarUtil;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -35,6 +38,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         initView();
         initData();
         StatusBarUtil.setStatusBarTranslucent(this, false);
+        Logger.addLogAdapter(new AndroidLogAdapter(){
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
     }
 
     /**

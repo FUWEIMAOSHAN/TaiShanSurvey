@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.dct.survey.taishan.view.progressactivity.ProgressLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/progressLinearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</com.dct.survey.taishan.view.progressactivity.ProgressLinearLayout>
