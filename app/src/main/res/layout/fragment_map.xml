@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:openDrawer="start"
-    android:fitsSystemWindows="true"
     android:clickable="false">
 
     <include layout="@layout/map_layout" />
@@ -21,7 +20,7 @@
         <LinearLayout
             android:id="@+id/left_title_layout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/main_title_height"
+            android:layout_height="@dimen/savebtn_padding"
             android:orientation="horizontal"
             android:background="@color/colorMainPresstext">
             <TextView

@@ -1,10 +1,9 @@
 package com.dct.survey.taishan.http;
 
-import com.dct.survey.taishan.bean.BaseResult;
-
 import java.util.Map;
 
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
 
@@ -22,5 +21,11 @@ public interface Api {
      * 登陆接口
      */
     @GET("CheckUserInfo")
-    Observable<BaseResult> login(@QueryMap Map<String, String> map);
+    Observable<ResponseBody> login(@QueryMap Map<String, String> map);
+
+    /**
+     * 获取所有的用户
+     */
+
+
 }

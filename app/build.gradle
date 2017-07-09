@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 25
@@ -22,7 +23,7 @@ android {
         config {
             keyAlias 'dct'
             keyPassword '123123'
-            storeFile file('D:\\AndroidProject\\TaiShanSurvey\\taishansurvey.jks')
+            storeFile file('D:\\androidStudioProject\\TaiShanSurvey\\taishansurvey.jks')
             storePassword '123123'
         }
     }
@@ -44,6 +45,12 @@ android {
         }
     }
 
+    greendao{
+        schemaVersion 1
+        daoPackage 'com.dct.survey.taishan.dao'
+        targetGenDir 'src/main/java'
+    }
+
     sourceSets { main { jni.srcDirs = ['src/main/jni', 'src/main/jniLibs/'] } }
 }
 
@@ -52,6 +59,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
     compile 'com.jakewharton:butterknife:8.6.0'
@@ -66,4 +74,5 @@ dependencies {
     compile files('libs/Android_Map3D_SDK_V5.2.1_20170630.jar')
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.22'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'org.greenrobot:greendao:3.2.2'
 }

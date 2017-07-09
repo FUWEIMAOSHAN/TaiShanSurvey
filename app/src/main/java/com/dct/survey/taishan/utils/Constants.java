@@ -5,7 +5,7 @@ import com.amap.api.maps.model.LatLng;
 
 public class Constants {
 
-	public static final LatLng TAISHAN = new LatLng(34.401288,113.757236);//
+	public static final LatLng TAISHAN = new LatLng(34.401288,113.757236);//台山
 	public static final LatLng FENGHELI = new LatLng(22.240528,112.795265);// 风和里
 	//初始化缩放级别
 	public static final int InitZoom = 14;

@@ -31,10 +31,8 @@ public class MainActivity extends BaseActivity {
     private long exitStartTime;
     private ArrayList<Fragment> fragments;
     private String[] mTitles = {"地图", "记录", "我的"};
-    private int[] mIconUnselectIds = {
-            R.drawable.map, R.drawable.record, R.drawable.user};
-    private int[] mIconSelectIds = {
-            R.drawable.map_press, R.drawable.record_press, R.drawable.user_press};
+    private int[] mIconUnselectIds = {R.drawable.map, R.drawable.record, R.drawable.user};
+    private int[] mIconSelectIds = {R.drawable.map_press, R.drawable.record_press, R.drawable.user_press};
     private ArrayList<CustomTabEntity> mTabEntities = new ArrayList<>();
 
     @Override

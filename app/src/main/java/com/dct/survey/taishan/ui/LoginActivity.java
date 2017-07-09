@@ -1,21 +1,23 @@
 package com.dct.survey.taishan.ui;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
-import com.dct.survey.taishan.bean.BaseResult;
 import com.dct.survey.taishan.http.RetrofitHttp;
 import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
+import com.dct.survey.taishan.utils.SpUtil;
 import com.dct.survey.taishan.utils.ToastUtil;
 import com.dct.survey.taishan.view.PowerfulEditText;
 import com.dct.survey.taishan.view.loadingdialog.LoadingDialog;
 import com.orhanobut.logger.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 
 /**
  * 创建：Android
@@ -48,7 +51,13 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initView() {
-
+        //用户名和密码数据的回显
+        String userName = SpUtil.getString(this, "userName", "");
+        String passWord = SpUtil.getString(this, "passWord", "");
+        if (!TextUtils.isEmpty(userName) && !TextUtils.isEmpty(passWord)){
+            name.setText(userName);
+            password.setText(passWord);
+        }
     }
 
     @Override
@@ -63,7 +72,7 @@ public class LoginActivity extends BaseActivity {
     @OnClick({R.id.login_btn})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.login_btn: //登陆
+            case R.id.login_btn: //登陆的事件
                 checkLogin();
                 break;
         }
@@ -106,20 +115,35 @@ public class LoginActivity extends BaseActivity {
             Map<String, String> map = new HashMap<>();
             map.put("UserName", username);
             map.put("PassWord", Md5Util.getMD5(psd));
-            Logger.e(Md5Util.getMD5(psd));
+
             RetrofitHttp.getRetrofit().login(map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DefaultObserver<BaseResult>() {
+                    .subscribe(new DefaultObserver<ResponseBody>() {
                         @Override
-                        public void onNext(@NonNull BaseResult baseResult) {
-                            Logger.d(baseResult.isSuccess());
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        public void onNext(@NonNull ResponseBody responseBody) {
+                            try {
+                                String result = responseBody.string();
+                                if (result.contains("true")){
+                                    ToastUtil.showShort(LoginActivity.this, "登陆成功");
+                                    SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
+                                    SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }else {
+                                    ToastUtil.showShort(LoginActivity.this, "登陆失败");
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-
+                            Logger.d(e.getMessage());
+                            ToastUtil.showShort(LoginActivity.this, "网络不给力");
+                            loadingDialog.close();
                         }
 
                         @Override

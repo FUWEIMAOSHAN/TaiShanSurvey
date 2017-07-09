@@ -21,7 +21,9 @@ public class BaseApplication extends Application {
      */
     public synchronized static BaseApplication getInstance() {
         if (null == baseApplication) {
-            baseApplication = new BaseApplication();
+            synchronized (BaseApplication.class) {
+                baseApplication = new BaseApplication();
+            }
         }
         return baseApplication;
     }
@@ -30,6 +32,13 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         applicationContext = getApplicationContext();
+        setGreenDao();
+    }
+
+    /**
+     * 配置GreenDao数据库
+     */
+    private void setGreenDao() {
 
     }
 

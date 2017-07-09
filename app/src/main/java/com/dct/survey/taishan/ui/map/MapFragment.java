@@ -3,7 +3,6 @@ package com.dct.survey.taishan.ui.map;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +20,8 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseFragment;
@@ -83,10 +84,12 @@ public class MapFragment extends BaseFragment {
     DrawerLayout drawerLayout;
 
     private AMap aMap;
-    private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
-    private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
     private View inflate;
     private Unbinder unbinder;
+    private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
+    private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
+    private Boolean isSelectLoc = false; //当前是否地图选点
+
 
     /**
      * 界面的点击事件
@@ -96,6 +99,7 @@ public class MapFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.select_text: //地图选点
+                selectPoint();
                 break;
             case R.id.traffic: //路况
                 break;
@@ -110,6 +114,7 @@ public class MapFragment extends BaseFragment {
             case R.id.lock: //锁定
                 break;
             case R.id.location: //定位
+                initLocation();
                 break;
             case R.id.clear: //清除
                 break;
@@ -121,18 +126,43 @@ public class MapFragment extends BaseFragment {
     }
 
     /**
+     * 地图中进行选点的方法
+     */
+    private void selectPoint() {
+        if (isSelectLoc){
+            isSelectLoc = false;
+            selectText.setText("地图选点");
+            selectText.setTextColor(getActivity().getResources().getColor(R.color.colorMaintext));
+            aMap.setMyLocationEnabled(true);
+        }else {
+            isSelectLoc = true;
+            selectText.setText("确定");
+            selectText.setTextColor(getActivity().getResources().getColor(R.color.colorYellow));
+            aMap.setMyLocationEnabled(false);
+            MarkerOptions markerOption = new MarkerOptions()
+                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_car))
+                    .position(Constants.TAISHAN) //默认选择台山
+                    .draggable(true)
+                    .setFlat(true); // 将Marker设置为贴地显示，可以双指下拉看效果
+            Marker marker = aMap.addMarker(markerOption);
+
+        }
+    }
+
+    /**
      * 高德地图生命周期配置
      * @param savedInstanceState
      */
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (null == inflate) {
             inflate = LayoutInflater.from(container.getContext()).inflate(getLayout(), container, false);
             unbinder = ButterKnife.bind(this, inflate);
         }else {
             unbinder = ButterKnife.bind(this, inflate);
         }
+        StatusBarUtil.setStatusBarTranslucent(getActivity(), true);
         mapView.onCreate(savedInstanceState);
         initView();
         initData();
@@ -146,7 +176,6 @@ public class MapFragment extends BaseFragment {
 
     @Override
     public void initView() {
-        StatusBarUtil.setStatusBarTranslucent(getActivity(), true);
         KeyBoardUtils.hideInputForce(getActivity());
         initMap();
         initLocation();
@@ -164,12 +193,12 @@ public class MapFragment extends BaseFragment {
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
         aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
         MyLocationStyle myLocationStyle = new MyLocationStyle();// 自定义系统定位蓝点
-        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.gps_point)); // 自定义定位蓝点图标
+        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked)); // 自定义定位蓝点图标
         myLocationStyle.strokeColor(STROKE_COLOR);// 自定义精度范围的圆形边框颜色
         myLocationStyle.strokeWidth(5);//自定义精度范围的圆形边框宽度
         myLocationStyle.radiusFillColor(FILL_COLOR); // 设置圆形的填充颜色
         myLocationStyle.showMyLocation(true); //设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）默认执行此种模式。
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE);//定位一次，且将视角移动到地图中心点。
         aMap.setMyLocationStyle(myLocationStyle); // 将自定义的 myLocationStyle 对象添加到地图上
         aMap.setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() { //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
             @Override
@@ -227,6 +256,7 @@ public class MapFragment extends BaseFragment {
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+        unbinder.unbind();
     }
 
     @Override
