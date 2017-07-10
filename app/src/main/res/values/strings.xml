@@ -7,5 +7,19 @@
     <string name="progressActivityErrorContentPlaceholder">We could not establish a connection with our servers. Please try again when you are connected to the internet.</string>
     <string name="progressActivityErrorButton">Try Again</string>
 
-
+    <string name="news">资讯</string>
+    <string name="map">地图</string>
+    <string name="feedback">反馈</string>
+    <string name="record_list">记录列表</string>
+    <string name="record">调查记录</string>
+    <string name="save">保存</string>
+    <string name="upload">一键上传</string>
+    <string name="pano">全景</string>
+    <string name="me">我的</string>
+    <string name="viewpager_indicator">%1$d/%2$d</string>
+    <string name="add">添加</string>
+    <string name="target_detail">遗址点信息</string>
+    <string name="timepicker_finish">确定</string>
+    <string name="commit">确定</string>
+    <string name="cancel">取消</string>
 </resources>

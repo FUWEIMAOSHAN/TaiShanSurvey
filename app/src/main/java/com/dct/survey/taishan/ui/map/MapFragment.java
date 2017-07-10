@@ -1,10 +1,11 @@
 package com.dct.survey.taishan.ui.map;
 
+import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
@@ -89,10 +91,12 @@ public class MapFragment extends BaseFragment {
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
     private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
     private Boolean isSelectLoc = false; //当前是否地图选点
+    private Marker marker;
 
 
     /**
      * 界面的点击事件
+     *
      * @param view
      */
     @OnClick({R.id.select_text, R.id.traffic, R.id.weixing, R.id.road, R.id.people, R.id.refresh, R.id.lock, R.id.location, R.id.clear, R.id.commit})
@@ -129,29 +133,38 @@ public class MapFragment extends BaseFragment {
      * 地图中进行选点的方法
      */
     private void selectPoint() {
-        if (isSelectLoc){
+        if (isSelectLoc) {
             isSelectLoc = false;
             selectText.setText("地图选点");
             selectText.setTextColor(getActivity().getResources().getColor(R.color.colorMaintext));
             aMap.setMyLocationEnabled(true);
-        }else {
+            aMap.setOnMapClickListener(null);
+            marker.remove();
+            Intent intent = new Intent(getContext(), TargetActivity.class);
+            startActivity(intent);
+        } else {
             isSelectLoc = true;
             selectText.setText("确定");
             selectText.setTextColor(getActivity().getResources().getColor(R.color.colorYellow));
             aMap.setMyLocationEnabled(false);
-            MarkerOptions markerOption = new MarkerOptions()
-                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_car))
-                    .position(Constants.TAISHAN) //默认选择台山
+            DisplayMetrics dm = this.getResources().getDisplayMetrics();
+            int screenWidth = dm.widthPixels;
+            int screenHeight = dm.heightPixels;
+            int bottomH = screenHeight * 13 / 192;
+            int titleH = (int) getResources().getDimension(R.dimen.main_title_height);//这样获取的值都是px值
+            marker = aMap.addMarker(new MarkerOptions()
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                     .draggable(true)
-                    .setFlat(true); // 将Marker设置为贴地显示，可以双指下拉看效果
-            Marker marker = aMap.addMarker(markerOption);
-
+                    .anchor(0.5f, 1f)
+                    .setFlat(true));// 将Marker设置为贴地显示，可以双指下拉看效果
+            marker.setPositionByPixels(screenWidth / 2, ((screenHeight - titleH - bottomH) / 2));
+            LatLng position = marker.getPosition(); //获取mark的高德坐标
         }
     }
 
     /**
      * 高德地图生命周期配置
+     *
      * @param savedInstanceState
      */
     @Override
@@ -159,7 +172,7 @@ public class MapFragment extends BaseFragment {
         if (null == inflate) {
             inflate = LayoutInflater.from(container.getContext()).inflate(getLayout(), container, false);
             unbinder = ButterKnife.bind(this, inflate);
-        }else {
+        } else {
             unbinder = ButterKnife.bind(this, inflate);
         }
         StatusBarUtil.setStatusBarTranslucent(getActivity(), true);
@@ -195,23 +208,18 @@ public class MapFragment extends BaseFragment {
         MyLocationStyle myLocationStyle = new MyLocationStyle();// 自定义系统定位蓝点
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked)); // 自定义定位蓝点图标
         myLocationStyle.strokeColor(STROKE_COLOR);// 自定义精度范围的圆形边框颜色
-        myLocationStyle.strokeWidth(5);//自定义精度范围的圆形边框宽度
+        myLocationStyle.strokeWidth(10);//自定义精度范围的圆形边框宽度
         myLocationStyle.radiusFillColor(FILL_COLOR); // 设置圆形的填充颜色
         myLocationStyle.showMyLocation(true); //设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE);//定位一次，且将视角移动到地图中心点。
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_MAP_ROTATE_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，地图依照设备方向旋转，并且蓝点会跟随设备移动。
         aMap.setMyLocationStyle(myLocationStyle); // 将自定义的 myLocationStyle 对象添加到地图上
-        aMap.setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() { //从location对象中获取经纬度信息，地址描述信息，建议拿到位置之后调用逆地理编码接口获取
-            @Override
-            public void onMyLocationChange(Location location) {
-
-            }
-        });
     }
+
     /**
      * 初始化高德地图
      */
     private void initMap() {
-        if (null == aMap){
+        if (null == aMap) {
             aMap = mapView.getMap();
             aMap.getUiSettings().setScaleControlsEnabled(true);//添加比例尺
             aMap.getUiSettings().setRotateGesturesEnabled(false);//禁止地图旋转
@@ -225,11 +233,11 @@ public class MapFragment extends BaseFragment {
      * 初始化地图的监听事件
      */
     private void initMapListener() {
-        if (aMap != null){
+        if (aMap != null) {
             aMap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
                 @Override
                 public void onTouch(MotionEvent motionEvent) {
-                    switch (motionEvent.getAction()){
+                    switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_MOVE:
                             //设置定位模式
 

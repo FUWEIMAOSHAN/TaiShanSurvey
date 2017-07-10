@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
+import com.dct.survey.taishan.bean.UserBean;
 import com.dct.survey.taishan.http.RetrofitHttp;
 import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
@@ -17,7 +18,6 @@ import com.dct.survey.taishan.view.PowerfulEditText;
 import com.dct.survey.taishan.view.loadingdialog.LoadingDialog;
 import com.orhanobut.logger.Logger;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +27,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
 
 /**
  * 创建：Android
@@ -119,23 +118,19 @@ public class LoginActivity extends BaseActivity {
             RetrofitHttp.getRetrofit().login(map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DefaultObserver<ResponseBody>() {
+                    .subscribe(new DefaultObserver<UserBean>() {
                         @Override
-                        public void onNext(@NonNull ResponseBody responseBody) {
-                            try {
-                                String result = responseBody.string();
-                                if (result.contains("true")){
-                                    ToastUtil.showShort(LoginActivity.this, "登陆成功");
-                                    SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
-                                    SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }else {
-                                    ToastUtil.showShort(LoginActivity.this, "登陆失败");
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                        public void onNext(@NonNull UserBean userBean) {
+                            boolean isTrue = userBean.isIsTrue();
+                            if (isTrue){
+                                ToastUtil.showShort(LoginActivity.this, "登陆成功");
+                                SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
+                                SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                ToastUtil.showShort(LoginActivity.this, "登陆失败");
                             }
                         }
 

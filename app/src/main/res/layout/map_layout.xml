@@ -6,6 +6,22 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="@dimen/main_title_height"
+        android:background="@color/colorBlack">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:text="@string/map"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/title_margin_bottom"
+            android:textSize="@dimen/sys_sp7"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.amap.api.maps.MapView

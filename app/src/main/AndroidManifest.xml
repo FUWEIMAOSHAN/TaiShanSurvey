@@ -41,6 +41,8 @@
 
         <activity android:name=".ui.MainActivity"/>
 
-    </application>
+        <activity android:name=".ui.map.TargetActivity"/>
 
+
+    </application>
 </manifest>
