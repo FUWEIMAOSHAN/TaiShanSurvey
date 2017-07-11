@@ -3,6 +3,8 @@ package com.dct.survey.taishan.base;
 import android.app.Application;
 import android.content.Context;
 
+import com.dct.survey.taishan.dao.GreenDaoManager;
+
 
 /**
  * 创建：Android
@@ -22,7 +24,9 @@ public class BaseApplication extends Application {
     public synchronized static BaseApplication getInstance() {
         if (null == baseApplication) {
             synchronized (BaseApplication.class) {
-                baseApplication = new BaseApplication();
+                if (null == baseApplication) {
+                    baseApplication = new BaseApplication();
+                }
             }
         }
         return baseApplication;
@@ -32,14 +36,7 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         applicationContext = getApplicationContext();
-        setGreenDao();
-    }
-
-    /**
-     * 配置GreenDao数据库
-     */
-    private void setGreenDao() {
-
+        GreenDaoManager.getInstance(this); //配置GreenDao数据库
     }
 
     /**

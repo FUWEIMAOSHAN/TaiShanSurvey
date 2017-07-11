@@ -8,7 +8,12 @@ import android.widget.Toast;
 
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
+import com.dct.survey.taishan.bean.Dictionary;
 import com.dct.survey.taishan.bean.UserBean;
+import com.dct.survey.taishan.bean.UserInfo;
+import com.dct.survey.taishan.dao.DaoSession;
+import com.dct.survey.taishan.dao.DictionaryDao;
+import com.dct.survey.taishan.dao.GreenDaoManager;
 import com.dct.survey.taishan.http.RetrofitHttp;
 import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
@@ -19,12 +24,17 @@ import com.dct.survey.taishan.view.loadingdialog.LoadingDialog;
 import com.orhanobut.logger.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -42,6 +52,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_btn)
     Button loginBtn;
     private LoadingDialog loadingDialog;
+    private DictionaryDao dictionaryDao;
 
     @Override
     protected int getLayout() {
@@ -61,7 +72,8 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        DaoSession daoSession = GreenDaoManager.getInstance(LoginActivity.this).getDaoSession();
+        dictionaryDao = daoSession.getDictionaryDao();
     }
 
     /**
@@ -123,14 +135,18 @@ public class LoginActivity extends BaseActivity {
                         public void onNext(@NonNull UserBean userBean) {
                             boolean isTrue = userBean.isIsTrue();
                             if (isTrue){
-                                ToastUtil.showShort(LoginActivity.this, "登陆成功");
+                                getAllUserInfo();
+                                getDictionary(0);
                                 SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
                                 SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
+                                ToastUtil.showShort(LoginActivity.this, "登陆成功");
+                                loadingDialog.close();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             }else {
                                 ToastUtil.showShort(LoginActivity.this, "登陆失败");
+                                loadingDialog.close();
                             }
                         }
 
@@ -143,9 +159,53 @@ public class LoginActivity extends BaseActivity {
 
                         @Override
                         public void onComplete() {
-                            loadingDialog.close();
+                            //loadingDialog.close();
                         }
                     });
+        }
+    }
+
+    /**
+     * 获取字典数据
+     */
+    private void getDictionary(final int offSet) {
+        if (!NetUtil.isConnected(this)){
+            ToastUtil.showShort(this, "网连接未连接");
+        }else {
+            Observable.just(offSet).flatMap(new Function<Integer, ObservableSource<List<Dictionary>>>() {
+                @Override
+                public ObservableSource<List<Dictionary>> apply(@NonNull Integer integer) throws Exception {
+                    return RetrofitHttp.getRetrofit().getDictionary(integer);
+                }
+            }).subscribeOn(Schedulers.io()).subscribe(new Consumer<List<Dictionary>>() {
+                @Override
+                public void accept(@NonNull List<Dictionary> dictionaries) throws Exception {
+                    if (null != dictionaries && dictionaries.size() > 0){
+                        for (Dictionary dictionary : dictionaries) {
+                            dictionaryDao.insertOrReplace(dictionary);
+                        }
+                        if (dictionaries.size() == 50){
+                            getDictionary(offSet+1);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * 获取所有用户的信息
+     */
+    private void getAllUserInfo() {
+        if (!NetUtil.isConnected(this)){
+            ToastUtil.showShort(this, "网连接未连接");
+        }else {
+            RetrofitHttp.getRetrofit().getAllUserInfo().subscribeOn(Schedulers.io()).subscribe(new Consumer<List<UserInfo>>() {
+                @Override
+                public void accept(@NonNull List<UserInfo> userInfos) throws Exception {
+
+                }
+            });
         }
     }
 

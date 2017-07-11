@@ -3,7 +3,7 @@ package com.dct.survey.taishan.bean;
 /**
  * 创建：Android
  * 日期：2017/7/10 13:38
- * 描述：
+ * 描述：登陆返回的信息
  */
 
 public class UserBean {

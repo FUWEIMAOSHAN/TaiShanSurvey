@@ -25,11 +25,19 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.services.core.AMapException;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseFragment;
 import com.dct.survey.taishan.utils.Constants;
 import com.dct.survey.taishan.utils.KeyBoardUtils;
 import com.dct.survey.taishan.utils.StatusBarUtil;
+import com.dct.survey.taishan.utils.ToastUtil;
+import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,7 +99,11 @@ public class MapFragment extends BaseFragment {
     private static final int STROKE_COLOR = Color.argb(180, 3, 145, 255);
     private static final int FILL_COLOR = Color.argb(10, 0, 0, 180);
     private Boolean isSelectLoc = false; //当前是否地图选点
-    private Marker marker;
+    private Boolean isLocation = true; //是否定位
+    private Boolean isShowTraffic = false; //是否显示交通情况
+    private Marker marker; //添加的marker标记
+    private String addressName; //添加的标记位置名称
+    private LatLng latLng; //添加标记的坐标点
 
 
     /**
@@ -106,6 +118,7 @@ public class MapFragment extends BaseFragment {
                 selectPoint();
                 break;
             case R.id.traffic: //路况
+                setTraffic();
                 break;
             case R.id.weixing: //卫星
                 break;
@@ -130,6 +143,21 @@ public class MapFragment extends BaseFragment {
     }
 
     /**
+     * 设置地图中的交通情况
+     */
+    private void setTraffic() {
+        if (!isShowTraffic) {
+            traffic.setImageResource(R.drawable.lukuang_press);
+            aMap.setTrafficEnabled(true);
+            isShowTraffic = true;
+        } else {
+            traffic.setImageResource(R.drawable.lukuang);
+            aMap.setTrafficEnabled(false);
+            isShowTraffic = false;
+        }
+    }
+
+    /**
      * 地图中进行选点的方法
      */
     private void selectPoint() {
@@ -140,7 +168,10 @@ public class MapFragment extends BaseFragment {
             aMap.setMyLocationEnabled(true);
             aMap.setOnMapClickListener(null);
             marker.remove();
+            getMarkLocationName();
             Intent intent = new Intent(getContext(), TargetActivity.class);
+            intent.putExtra("addressName", addressName);
+            Logger.d(addressName);
             startActivity(intent);
         } else {
             isSelectLoc = true;
@@ -158,7 +189,39 @@ public class MapFragment extends BaseFragment {
                     .anchor(0.5f, 1f)
                     .setFlat(true));// 将Marker设置为贴地显示，可以双指下拉看效果
             marker.setPositionByPixels(screenWidth / 2, ((screenHeight - titleH - bottomH) / 2));
-            LatLng position = marker.getPosition(); //获取mark的高德坐标
+            //获取mark的高德坐标
+            latLng = marker.getPosition();
+        }
+    }
+
+    /**
+     * 利用高德地图的解码坐标得到具体的地理名称
+     */
+    private void getMarkLocationName() {
+        GeocodeSearch geocodeSearch = new GeocodeSearch(getContext());
+        geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
+            @Override
+            public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
+                if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+                    if (result != null && result.getRegeocodeAddress() != null
+                            && result.getRegeocodeAddress().getFormatAddress() != null) {
+                        addressName = result.getRegeocodeAddress().getFormatAddress() + "附近";
+                    } else {
+                        ToastUtil.showShort(getContext(), "对不起，没有搜索到相关的数据");
+                    }
+                } else {
+                    ToastUtil.showShort(getContext(), "对不起，位置编码错误");
+                }
+            }
+
+            @Override
+            public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+
+            }
+        });
+        if (latLng != null) {
+            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(latLng.latitude, latLng.longitude), 200, GeocodeSearch.AMAP);
+            geocodeSearch.getFromLocationAsyn(query);
         }
     }
 
@@ -203,16 +266,24 @@ public class MapFragment extends BaseFragment {
      * 初始化地图的定位
      */
     private void initLocation() {
-        aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
-        aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
-        MyLocationStyle myLocationStyle = new MyLocationStyle();// 自定义系统定位蓝点
-        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked)); // 自定义定位蓝点图标
-        myLocationStyle.strokeColor(STROKE_COLOR);// 自定义精度范围的圆形边框颜色
-        myLocationStyle.strokeWidth(10);//自定义精度范围的圆形边框宽度
-        myLocationStyle.radiusFillColor(FILL_COLOR); // 设置圆形的填充颜色
-        myLocationStyle.showMyLocation(true); //设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_MAP_ROTATE_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，地图依照设备方向旋转，并且蓝点会跟随设备移动。
-        aMap.setMyLocationStyle(myLocationStyle); // 将自定义的 myLocationStyle 对象添加到地图上
+        if (isLocation) {
+            isLocation = false;
+            location.setBackgroundResource(R.drawable.location_center);
+            aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+            aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
+            MyLocationStyle myLocationStyle = new MyLocationStyle();// 自定义系统定位蓝点
+            myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked)); // 自定义定位蓝点图标
+            myLocationStyle.strokeColor(STROKE_COLOR);// 自定义精度范围的圆形边框颜色
+            myLocationStyle.strokeWidth(10);//自定义精度范围的圆形边框宽度
+            myLocationStyle.radiusFillColor(FILL_COLOR); // 设置圆形的填充颜色
+            myLocationStyle.showMyLocation(true); //设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
+            myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、蓝点不会移动到地图中心点，地图依照设备方向旋转，并且蓝点会跟随设备移动。
+            aMap.setMyLocationStyle(myLocationStyle); // 将自定义的 myLocationStyle 对象添加到地图上
+        }else {
+            isLocation = true;
+            location.setBackgroundResource(R.drawable.location_pan);
+            aMap.setMyLocationEnabled(false);
+        }
     }
 
     /**

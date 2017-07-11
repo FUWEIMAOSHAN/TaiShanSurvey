@@ -6,7 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/main_title_height"
+        android:layout_height="@dimen/feed_back_bottom_height"
         android:background="@color/colorBlack">
         <TextView
             android:layout_width="wrap_content"
