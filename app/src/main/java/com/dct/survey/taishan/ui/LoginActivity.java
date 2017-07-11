@@ -51,8 +51,10 @@ public class LoginActivity extends BaseActivity {
     PowerfulEditText password;
     @BindView(R.id.login_btn)
     Button loginBtn;
+
     private LoadingDialog loadingDialog;
     private DictionaryDao dictionaryDao;
+    private int offSet = 0;
 
     @Override
     protected int getLayout() {
@@ -136,7 +138,7 @@ public class LoginActivity extends BaseActivity {
                             boolean isTrue = userBean.isIsTrue();
                             if (isTrue){
                                 getAllUserInfo();
-                                getDictionary(0);
+                                getDictionary();
                                 SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
                                 SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
                                 ToastUtil.showShort(LoginActivity.this, "登陆成功");
@@ -168,10 +170,13 @@ public class LoginActivity extends BaseActivity {
     /**
      * 获取字典数据
      */
-    private void getDictionary(final int offSet) {
+    private void getDictionary() {
         if (!NetUtil.isConnected(this)){
             ToastUtil.showShort(this, "网连接未连接");
         }else {
+            if (offSet == 0) {
+                dictionaryDao.deleteAll();
+            }
             Observable.just(offSet).flatMap(new Function<Integer, ObservableSource<List<Dictionary>>>() {
                 @Override
                 public ObservableSource<List<Dictionary>> apply(@NonNull Integer integer) throws Exception {
@@ -185,7 +190,8 @@ public class LoginActivity extends BaseActivity {
                             dictionaryDao.insertOrReplace(dictionary);
                         }
                         if (dictionaries.size() == 50){
-                            getDictionary(offSet+1);
+                            ++offSet;
+                            getDictionary();
                         }
                     }
                 }

@@ -25,19 +25,11 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
-import com.amap.api.services.core.AMapException;
-import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.geocoder.GeocodeResult;
-import com.amap.api.services.geocoder.GeocodeSearch;
-import com.amap.api.services.geocoder.RegeocodeQuery;
-import com.amap.api.services.geocoder.RegeocodeResult;
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseFragment;
 import com.dct.survey.taishan.utils.Constants;
 import com.dct.survey.taishan.utils.KeyBoardUtils;
 import com.dct.survey.taishan.utils.StatusBarUtil;
-import com.dct.survey.taishan.utils.ToastUtil;
-import com.orhanobut.logger.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -168,10 +160,8 @@ public class MapFragment extends BaseFragment {
             aMap.setMyLocationEnabled(true);
             aMap.setOnMapClickListener(null);
             marker.remove();
-            getMarkLocationName();
             Intent intent = new Intent(getContext(), TargetActivity.class);
-            intent.putExtra("addressName", addressName);
-            Logger.d(addressName);
+            intent.putExtra("latLng", latLng);
             startActivity(intent);
         } else {
             isSelectLoc = true;
@@ -191,37 +181,6 @@ public class MapFragment extends BaseFragment {
             marker.setPositionByPixels(screenWidth / 2, ((screenHeight - titleH - bottomH) / 2));
             //获取mark的高德坐标
             latLng = marker.getPosition();
-        }
-    }
-
-    /**
-     * 利用高德地图的解码坐标得到具体的地理名称
-     */
-    private void getMarkLocationName() {
-        GeocodeSearch geocodeSearch = new GeocodeSearch(getContext());
-        geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
-            @Override
-            public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
-                if (rCode == AMapException.CODE_AMAP_SUCCESS) {
-                    if (result != null && result.getRegeocodeAddress() != null
-                            && result.getRegeocodeAddress().getFormatAddress() != null) {
-                        addressName = result.getRegeocodeAddress().getFormatAddress() + "附近";
-                    } else {
-                        ToastUtil.showShort(getContext(), "对不起，没有搜索到相关的数据");
-                    }
-                } else {
-                    ToastUtil.showShort(getContext(), "对不起，位置编码错误");
-                }
-            }
-
-            @Override
-            public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
-
-            }
-        });
-        if (latLng != null) {
-            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(latLng.latitude, latLng.longitude), 200, GeocodeSearch.AMAP);
-            geocodeSearch.getFromLocationAsyn(query);
         }
     }
 

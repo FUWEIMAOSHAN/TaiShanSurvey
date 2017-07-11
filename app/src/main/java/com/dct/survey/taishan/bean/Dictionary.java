@@ -2,6 +2,7 @@ package com.dct.survey.taishan.bean;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 
 /**
  * 创建： fuwei
@@ -20,7 +21,8 @@ public class Dictionary {
      * KEYVALUE : 1127020201
      * NAME : 保护现状
      */
-
+    @Id(autoincrement = true)
+    private Long id;
     private String CODE;
     private String DESCRIPTION;
     private int FROWINDEX;
@@ -28,9 +30,10 @@ public class Dictionary {
     private String KEYVALUE;
     private String NAME;
 
-    @Generated(hash = 978544408)
-    public Dictionary(String CODE, String DESCRIPTION, int FROWINDEX,
+    @Generated(hash = 221451032)
+    public Dictionary(Long id, String CODE, String DESCRIPTION, int FROWINDEX,
             String KEYNAME, String KEYVALUE, String NAME) {
+        this.id = id;
         this.CODE = CODE;
         this.DESCRIPTION = DESCRIPTION;
         this.FROWINDEX = FROWINDEX;
@@ -89,5 +92,13 @@ public class Dictionary {
 
     public void setNAME(String NAME) {
         this.NAME = NAME;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

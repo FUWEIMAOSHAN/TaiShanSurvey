@@ -11,8 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class GreenDaoManager {
 
-    private static DaoSession daoSession;
-    private static DaoMaster daoMaster;
+    private  DaoSession daoSession;
+    private  DaoMaster daoMaster;
 
     private GreenDaoManager(Context context){
         DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(context, "dct.db",null);

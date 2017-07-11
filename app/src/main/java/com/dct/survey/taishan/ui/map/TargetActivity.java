@@ -9,17 +9,22 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.services.core.AMapException;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
-import com.dct.survey.taishan.bean.Dictionary;
-import com.dct.survey.taishan.dao.DictionaryDao;
-import com.dct.survey.taishan.dao.GreenDaoManager;
+import com.dct.survey.taishan.bean.SurveyTarget;
+import com.dct.survey.taishan.dao.DaoManager;
+import com.dct.survey.taishan.utils.CurrentDate;
+import com.dct.survey.taishan.utils.ToastUtil;
+import com.dct.survey.taishan.utils.UUID;
 import com.dct.survey.taishan.view.pickview.OptionsPickerView;
-import com.orhanobut.logger.Logger;
 
-import org.greenrobot.greendao.query.QueryBuilder;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -76,6 +81,7 @@ public class TargetActivity extends BaseActivity {
 
     private List<String> types; //类型
     private List<String> grades; //等级
+    private LatLng latLng;
 
     @Override
     protected int getLayout() {
@@ -84,9 +90,9 @@ public class TargetActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        String addressName = getIntent().getStringExtra("addressName");
-        if (!TextUtils.isEmpty(addressName)){ //添加标记
-            location.setText(addressName);
+        latLng = getIntent().getParcelableExtra("latLng");
+        if (null != latLng){ //添加标记
+            getMarkLocationName();
         }else { //编辑标记
 
         }
@@ -94,22 +100,8 @@ public class TargetActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        DictionaryDao dictionaryDao = GreenDaoManager.getInstance(this).getDaoSession().getDictionaryDao();
-        QueryBuilder<Dictionary> builder = dictionaryDao.queryBuilder();
-        List<Dictionary> list = builder.build().list();
-        Logger.d(list.size());
-        List<Dictionary> gradeLists = builder.where(DictionaryDao.Properties.CODE.eq("1134")).build().list();
-        List<Dictionary> typeLists = builder.where(DictionaryDao.Properties.CODE.eq("113504")).build().list();
-        types = new ArrayList<>();
-        grades = new ArrayList<>();
-        for (Dictionary dictionary : typeLists){
-            String type = dictionary.getKEYNAME();
-            types.add(type);
-        }
-        for (Dictionary dictionary : gradeLists){
-            String grade = dictionary.getKEYNAME();
-            grades.add(grade);
-        }
+        grades = DaoManager.getInstance(this).getGrade();
+        types = DaoManager.getInstance(this).getType();
     }
 
     @OnClick({R.id.back, R.id.delete, R.id.save, R.id.type, R.id.grade, R.id.image})
@@ -121,6 +113,7 @@ public class TargetActivity extends BaseActivity {
             case R.id.delete: //删除
                 break;
             case R.id.save: //保存
+                saveTarget();
                 break;
             case R.id.type: //类型
                 selectType();
@@ -132,6 +125,28 @@ public class TargetActivity extends BaseActivity {
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 保存标记的方法
+     */
+    private void saveTarget() {
+        String selectType = this.type.getText().toString().trim();
+        if (TextUtils.isEmpty(selectType)){
+            ToastUtil.showShort(this, "请选择标记的类型");
+        }else {
+            SurveyTarget surveyTarget = new SurveyTarget();
+            surveyTarget.setNAME(name.getText().toString().trim());
+            surveyTarget.setADDRESS(location.getText().toString().trim());
+            surveyTarget.setGRADE(DaoManager.getInstance(this).getNoFromName(grade.getText().toString().trim()));
+            surveyTarget.setTGTTYPE(DaoManager.getInstance(this).getNoFromName(type.getText().toString().trim()));
+            surveyTarget.setZ("0");
+            surveyTarget.setN(String.valueOf(latLng.latitude));
+            surveyTarget.setE(String.valueOf(latLng.longitude));
+            surveyTarget.setGUID(UUID.getUUID());
+            surveyTarget.setSTATE("-2");
+            surveyTarget.setUPDATETIME(CurrentDate.getmm());
         }
     }
 
@@ -164,4 +179,35 @@ public class TargetActivity extends BaseActivity {
         pickerView.setPicker(types);
         pickerView.show();
     }
+
+    /**
+     * 利用高德地图的解码坐标得到具体的地理名称
+     */
+    private void getMarkLocationName() {
+        GeocodeSearch geocodeSearch = new GeocodeSearch(this);
+        geocodeSearch.setOnGeocodeSearchListener(new GeocodeSearch.OnGeocodeSearchListener() {
+            @Override
+            public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
+                if (rCode == AMapException.CODE_AMAP_SUCCESS) {
+                    if (result != null && result.getRegeocodeAddress() != null
+                            && result.getRegeocodeAddress().getFormatAddress() != null) {
+                        String addressName = result.getRegeocodeAddress().getFormatAddress() + "附近";
+                        location.setText(addressName);
+                    } else {
+                        ToastUtil.showShort(TargetActivity.this, "对不起，没有搜索到相关的数据");
+                    }
+                } else {
+                    ToastUtil.showShort(TargetActivity.this, "对不起，位置编码错误");
+                }
+            }
+
+            @Override
+            public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {}
+        });
+        if (latLng != null) {
+            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(latLng.latitude, latLng.longitude), 200, GeocodeSearch.AMAP);
+            geocodeSearch.getFromLocationAsyn(query);
+        }
+    }
+
 }
