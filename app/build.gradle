@@ -23,7 +23,7 @@ android {
         config {
             keyAlias 'dct'
             keyPassword '123123'
-            storeFile file('D:\\androidStudioProject\\TaiShanSurvey\\taishansurvey.jks')
+            storeFile file('./taishansurvey.jks')
             storePassword '123123'
         }
     }
@@ -35,7 +35,7 @@ android {
             signingConfig signingConfigs.config
         }
         debug{
-            //signingConfig signingConfigs.config
+            signingConfig signingConfigs.config
         }
     }
 

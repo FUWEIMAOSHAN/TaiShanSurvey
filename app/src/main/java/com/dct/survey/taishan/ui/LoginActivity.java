@@ -9,11 +9,11 @@ import android.widget.Toast;
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
 import com.dct.survey.taishan.bean.Dictionary;
+import com.dct.survey.taishan.bean.LoginBean;
 import com.dct.survey.taishan.bean.UserBean;
-import com.dct.survey.taishan.bean.UserInfo;
-import com.dct.survey.taishan.dao.DaoSession;
+import com.dct.survey.taishan.dao.DaoManager;
 import com.dct.survey.taishan.dao.DictionaryDao;
-import com.dct.survey.taishan.dao.GreenDaoManager;
+import com.dct.survey.taishan.dao.UserBeanDao;
 import com.dct.survey.taishan.http.RetrofitHttp;
 import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
@@ -55,6 +55,7 @@ public class LoginActivity extends BaseActivity {
     private LoadingDialog loadingDialog;
     private DictionaryDao dictionaryDao;
     private int offSet = 0;
+    private UserBeanDao userBeanDao;
 
     @Override
     protected int getLayout() {
@@ -74,8 +75,9 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        DaoSession daoSession = GreenDaoManager.getInstance(LoginActivity.this).getDaoSession();
-        dictionaryDao = daoSession.getDictionaryDao();
+        DaoManager daoManager = DaoManager.getInstance(this);
+        dictionaryDao = daoManager.getDictionaryDao();
+        userBeanDao = daoManager.getUserBeanDao();
     }
 
     /**
@@ -132,15 +134,17 @@ public class LoginActivity extends BaseActivity {
             RetrofitHttp.getRetrofit().login(map)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DefaultObserver<UserBean>() {
+                    .subscribe(new DefaultObserver<LoginBean>() {
                         @Override
-                        public void onNext(@NonNull UserBean userBean) {
-                            boolean isTrue = userBean.isIsTrue();
+                        public void onNext(@NonNull LoginBean loginBean) {
+                            boolean isTrue = loginBean.isIsTrue();
                             if (isTrue){
                                 getAllUserInfo();
                                 getDictionary();
                                 SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
                                 SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
+                                UserBean currentUser = DaoManager.getInstance(LoginActivity.this).getCurrentUser(name.getText().toString().trim());
+                                SpUtil.putString(LoginActivity.this, "guid", currentUser.getGUID());
                                 ToastUtil.showShort(LoginActivity.this, "登陆成功");
                                 loadingDialog.close();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -206,10 +210,12 @@ public class LoginActivity extends BaseActivity {
         if (!NetUtil.isConnected(this)){
             ToastUtil.showShort(this, "网连接未连接");
         }else {
-            RetrofitHttp.getRetrofit().getAllUserInfo().subscribeOn(Schedulers.io()).subscribe(new Consumer<List<UserInfo>>() {
+            RetrofitHttp.getRetrofit().getAllUserInfo().subscribeOn(Schedulers.io()).subscribe(new Consumer<List<UserBean>>() {
                 @Override
-                public void accept(@NonNull List<UserInfo> userInfos) throws Exception {
-
+                public void accept(@NonNull List<UserBean> userBeens) throws Exception {
+                    for (UserBean userBean : userBeens) {
+                        userBeanDao.insertOrReplace(userBean);
+                    }
                 }
             });
         }

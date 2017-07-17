@@ -1,8 +1,8 @@
 package com.dct.survey.taishan.http;
 
 import com.dct.survey.taishan.bean.Dictionary;
+import com.dct.survey.taishan.bean.LoginBean;
 import com.dct.survey.taishan.bean.UserBean;
-import com.dct.survey.taishan.bean.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -26,13 +26,13 @@ public interface Api {
      * 登陆接口
      */
     @GET("CheckUserInfo")
-    Observable<UserBean> login(@QueryMap Map<String, String> map);
+    Observable<LoginBean> login(@QueryMap Map<String, String> map);
 
     /**
      * 获取所有的用户
      */
     @GET("GetAllUserInfo")
-    Observable<List<UserInfo>> getAllUserInfo();
+    Observable<List<UserBean>> getAllUserInfo();
 
     /**
      * 字典数据接口
