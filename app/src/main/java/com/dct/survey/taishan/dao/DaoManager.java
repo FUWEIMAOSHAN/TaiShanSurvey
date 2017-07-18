@@ -12,21 +12,27 @@ import com.dct.survey.taishan.bean.UserBean;
 
 public class DaoManager {
 
-    private DictionaryDao dictionaryDao;
     private UserBeanDao userBeanDao;
+    private DictionaryLibraryDao dictionaryLibraryDao;
+    private WorkSiteBeanDao workSiteBeanDao;
 
     public UserBeanDao getUserBeanDao() {
         return userBeanDao;
     }
 
-    public DictionaryDao getDictionaryDao() {
-        return dictionaryDao;
+    public DictionaryLibraryDao getDictionaryLibraryDao() {
+        return dictionaryLibraryDao;
+    }
+
+    public WorkSiteBeanDao getWorkSiteBeanDao() {
+        return workSiteBeanDao;
     }
 
     private DaoManager(Context context){
         DaoSession daoSession = GreenDaoManager.getInstance(context).getDaoSession();
-        dictionaryDao = daoSession.getDictionaryDao();
         userBeanDao = daoSession.getUserBeanDao();
+        dictionaryLibraryDao = daoSession.getDictionaryLibraryDao();
+        workSiteBeanDao = daoSession.getWorkSiteBeanDao();
     }
     private static DaoManager daoManager;
     public synchronized static  DaoManager getInstance(Context context){

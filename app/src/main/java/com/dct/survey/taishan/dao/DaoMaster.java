@@ -21,16 +21,18 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        DictionaryDao.createTable(db, ifNotExists);
         SurveyTargetDao.createTable(db, ifNotExists);
         UserBeanDao.createTable(db, ifNotExists);
+        DictionaryLibraryDao.createTable(db, ifNotExists);
+        WorkSiteBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        DictionaryDao.dropTable(db, ifExists);
         SurveyTargetDao.dropTable(db, ifExists);
         UserBeanDao.dropTable(db, ifExists);
+        DictionaryLibraryDao.dropTable(db, ifExists);
+        WorkSiteBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -49,9 +51,10 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(DictionaryDao.class);
         registerDaoClass(SurveyTargetDao.class);
         registerDaoClass(UserBeanDao.class);
+        registerDaoClass(DictionaryLibraryDao.class);
+        registerDaoClass(WorkSiteBeanDao.class);
     }
 
     public DaoSession newSession() {

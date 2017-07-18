@@ -1,15 +1,15 @@
 package com.dct.survey.taishan.http;
 
-import com.dct.survey.taishan.bean.Dictionary;
+import com.dct.survey.taishan.bean.DictionaryLibrary;
 import com.dct.survey.taishan.bean.LoginBean;
 import com.dct.survey.taishan.bean.UserBean;
+import com.dct.survey.taishan.bean.WorkSiteBean;
 
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
 /**
@@ -38,6 +38,12 @@ public interface Api {
      * 字典数据接口
      */
     @GET("GetDictionaryInfoList")
-    Observable<List<Dictionary>> getDictionary(@Query("offSet") int offSet);
+    Observable<DictionaryLibrary> getDictionary();
+
+    /**
+     * 获取工地信息数据接口
+     */
+    @GET("getWorkSiteList")
+    Observable<List<WorkSiteBean>> getWorkSite();
 
 }

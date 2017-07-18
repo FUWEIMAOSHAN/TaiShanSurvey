@@ -8,12 +8,11 @@ import android.widget.Toast;
 
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
-import com.dct.survey.taishan.bean.Dictionary;
+import com.dct.survey.taishan.bean.DictionaryLibrary;
 import com.dct.survey.taishan.bean.LoginBean;
 import com.dct.survey.taishan.bean.UserBean;
+import com.dct.survey.taishan.bean.WorkSiteBean;
 import com.dct.survey.taishan.dao.DaoManager;
-import com.dct.survey.taishan.dao.DictionaryDao;
-import com.dct.survey.taishan.dao.UserBeanDao;
 import com.dct.survey.taishan.http.RetrofitHttp;
 import com.dct.survey.taishan.utils.Md5Util;
 import com.dct.survey.taishan.utils.NetUtil;
@@ -29,12 +28,9 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.observers.DefaultObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -53,9 +49,7 @@ public class LoginActivity extends BaseActivity {
     Button loginBtn;
 
     private LoadingDialog loadingDialog;
-    private DictionaryDao dictionaryDao;
     private int offSet = 0;
-    private UserBeanDao userBeanDao;
 
     @Override
     protected int getLayout() {
@@ -75,9 +69,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        DaoManager daoManager = DaoManager.getInstance(this);
-        dictionaryDao = daoManager.getDictionaryDao();
-        userBeanDao = daoManager.getUserBeanDao();
+
     }
 
     /**
@@ -141,6 +133,7 @@ public class LoginActivity extends BaseActivity {
                             if (isTrue){
                                 getAllUserInfo();
                                 getDictionary();
+                                getWorkSite();
                                 SpUtil.putString(LoginActivity.this, "userName", name.getText().toString().trim());
                                 SpUtil.putString(LoginActivity.this, "passWord", password.getText().toString().trim());
                                 UserBean currentUser = DaoManager.getInstance(LoginActivity.this).getCurrentUser(name.getText().toString().trim());
@@ -165,9 +158,27 @@ public class LoginActivity extends BaseActivity {
 
                         @Override
                         public void onComplete() {
-                            //loadingDialog.close();
+
                         }
                     });
+        }
+    }
+
+    /**
+     * 获取工地的信息
+     */
+    private void getWorkSite() {
+        if (!NetUtil.isConnected(this)){
+            ToastUtil.showShort(this, "网连接未连接");
+        }else {
+            RetrofitHttp.getRetrofit().getWorkSite().subscribeOn(Schedulers.io()).subscribe(new Consumer<List<WorkSiteBean>>() {
+                @Override
+                public void accept(@NonNull List<WorkSiteBean> workSiteBeens) throws Exception {
+                    for (WorkSiteBean workSiteBean : workSiteBeens) {
+                        DaoManager.getInstance(LoginActivity.this).getWorkSiteBeanDao().insertOrReplace(workSiteBean);
+                    }
+                }
+            });
         }
     }
 
@@ -178,26 +189,10 @@ public class LoginActivity extends BaseActivity {
         if (!NetUtil.isConnected(this)){
             ToastUtil.showShort(this, "网连接未连接");
         }else {
-            if (offSet == 0) {
-                dictionaryDao.deleteAll();
-            }
-            Observable.just(offSet).flatMap(new Function<Integer, ObservableSource<List<Dictionary>>>() {
+            RetrofitHttp.getRetrofit().getDictionary().subscribeOn(Schedulers.io()).subscribe(new Consumer<DictionaryLibrary>() {
                 @Override
-                public ObservableSource<List<Dictionary>> apply(@NonNull Integer integer) throws Exception {
-                    return RetrofitHttp.getRetrofit().getDictionary(integer);
-                }
-            }).subscribeOn(Schedulers.io()).subscribe(new Consumer<List<Dictionary>>() {
-                @Override
-                public void accept(@NonNull List<Dictionary> dictionaries) throws Exception {
-                    if (null != dictionaries && dictionaries.size() > 0){
-                        for (Dictionary dictionary : dictionaries) {
-                            dictionaryDao.insertOrReplace(dictionary);
-                        }
-                        if (dictionaries.size() == 50){
-                            ++offSet;
-                            getDictionary();
-                        }
-                    }
+                public void accept(@NonNull DictionaryLibrary dictionaryLibrary) throws Exception {
+                    DaoManager.getInstance(LoginActivity.this).getDictionaryLibraryDao().insertOrReplace(dictionaryLibrary);
                 }
             });
         }
@@ -214,7 +209,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void accept(@NonNull List<UserBean> userBeens) throws Exception {
                     for (UserBean userBean : userBeens) {
-                        userBeanDao.insertOrReplace(userBean);
+                        DaoManager.getInstance(LoginActivity.this).getUserBeanDao().insertOrReplace(userBean);
                     }
                 }
             });

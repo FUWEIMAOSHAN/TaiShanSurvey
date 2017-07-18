@@ -19,7 +19,6 @@ import com.amap.api.services.geocoder.RegeocodeResult;
 import com.dct.survey.taishan.R;
 import com.dct.survey.taishan.base.BaseActivity;
 import com.dct.survey.taishan.bean.SurveyTarget;
-import com.dct.survey.taishan.dao.DaoManager;
 import com.dct.survey.taishan.utils.CurrentDate;
 import com.dct.survey.taishan.utils.ToastUtil;
 import com.dct.survey.taishan.utils.UUID;
@@ -100,8 +99,7 @@ public class TargetActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        grades = DaoManager.getInstance(this).getGrade();
-        types = DaoManager.getInstance(this).getType();
+
     }
 
     @OnClick({R.id.back, R.id.delete, R.id.save, R.id.type, R.id.grade, R.id.image})
@@ -139,8 +137,6 @@ public class TargetActivity extends BaseActivity {
             SurveyTarget surveyTarget = new SurveyTarget();
             surveyTarget.setNAME(name.getText().toString().trim());
             surveyTarget.setADDRESS(location.getText().toString().trim());
-            surveyTarget.setGRADE(DaoManager.getInstance(this).getNoFromName(grade.getText().toString().trim()));
-            surveyTarget.setTGTTYPE(DaoManager.getInstance(this).getNoFromName(type.getText().toString().trim()));
             surveyTarget.setZ("0");
             surveyTarget.setN(String.valueOf(latLng.latitude));
             surveyTarget.setE(String.valueOf(latLng.longitude));
