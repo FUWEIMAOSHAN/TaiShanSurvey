@@ -7,12 +7,12 @@
         <!-- 圆角 -->
         <corners android:radius="20dp"/>
 
-        <solid android:color="@color/colorMainPresstext"/>
+        <solid android:color="@color/colorAccent"/>
     </shape>
 </item>
 <item>
     <shape>
-        <solid android:color="@color/colorYellow"/>
+        <solid android:color="@color/colorAccent"/>
 
         <corners android:radius="20dp"/>
     </shape>

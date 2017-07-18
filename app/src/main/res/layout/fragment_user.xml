@@ -31,7 +31,7 @@
                 android:textSize="@dimen/sys_sp7" />
         </RelativeLayout>
 
-        <com.dct.survey.taishan.view.CircleImageView
+        <com.dct.survey.taishans.view.CircleImageView
             android:id="@+id/head_img"
             android:layout_width="@dimen/user_head_wh"
             android:layout_height="@dimen/user_head_wh"

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorLogintext"
+    android:background="@drawable/loginbg"
     android:gravity="center">
 
     <ImageView
@@ -34,7 +34,7 @@
                 android:layout_height="30dp"
                 android:src="@drawable/user_name" />
 
-            <com.dct.survey.taishan.view.PowerfulEditText
+            <com.dct.survey.taishans.view.PowerfulEditText
                 app:funcType="canClear"
                 android:id="@+id/name"
                 android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                 android:singleLine="true"
                 android:textColorHint="@color/colorsplit"
                 android:textSize="20sp"
-                android:textColor="@color/colorYellow"
+                android:textColor="@color/colorAccent"
                />
         </LinearLayout>
 
@@ -65,7 +65,7 @@
                 android:layout_height="30dp"
                 android:src="@drawable/passwd" />
 
-            <com.dct.survey.taishan.view.PowerfulEditText
+            <com.dct.survey.taishans.view.PowerfulEditText
                 app:funcType="canWatchPwd"
                 android:inputType="numberPassword"
                 android:id="@+id/password"
@@ -79,9 +79,9 @@
                 android:singleLine="true"
                 android:textColorHint="@color/colorsplit"
                 android:textSize="20sp"
-                android:textColor="@color/colorYellow"
-                app:met_baseColor="@color/colorYellow"
-                app:met_primaryColor="@color/colorYellow" />
+                android:textColor="@color/colorAccent"
+                app:met_baseColor="@color/colorAccent"
+                app:met_primaryColor="@color/colorAccent" />
         </LinearLayout>
 
         <Button
@@ -91,7 +91,7 @@
             android:layout_marginLeft="35dp"
             android:layout_marginRight="35dp"
             android:layout_height="44dp"
-            android:textColor="@color/colorLogintext"
+            android:textColor="@color/colorWhite"
             android:text="登 录"
             android:textSize="18sp"
             android:background="@drawable/login_button"

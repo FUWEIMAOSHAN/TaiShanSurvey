@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dct.survey.taishan" >
+    package="com.dct.survey.taishans" >
 
     <!--允许程序打开网络套接字-->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,33 +16,83 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 允许修改 WIFI 状态的权限 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!--允许程序设置内置sd卡的读权限-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--相机的权限-->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 在SDCard中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <!-- 操作系统设置操作权限  -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- 录音操作权限  -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
-        android:name=".base.BaseApplication"
+        android:name="com.dct.survey.taishans.base.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:screenOrientation="portrait" >
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="0fbf80590d3d58f9658af881f72cf5f4"/>
+            android:value="3b5965f74d7889a7d306c31bd9406c6a"/>
 
-        <activity android:name=".ui.SplashActivity" >
+        <activity android:name="com.dct.survey.taishans.ui.SplashActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.LoginActivity"/>
+        <activity android:name="com.dct.survey.taishans.ui.LoginActivity"/>
 
-        <activity android:name=".ui.MainActivity"/>
+        <activity android:name="com.dct.survey.taishans.ui.MainActivity"/>
 
-        <activity android:name=".ui.map.TargetActivity"/>
+        <activity android:name="com.dct.survey.taishans.ui.map.TargetActivity"/>
 
+        <activity
+            android:name=".utils.PictureSelector.PictureSelectorActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".utils.PictureSelector.PictureBaseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".utils.PictureSelector.PicturePreviewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".utils.PictureSelector.PictureVideoPlayActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="sensor" />
+        <activity
+            android:name=".utils.PictureSelector.PictureExternalPreviewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".utils.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".utils.ucrop.PictureMultiCuttingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".utils.PictureSelector.PicturePlayAudioActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>
 </manifest>

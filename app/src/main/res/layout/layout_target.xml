@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/head_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/savebtn_padding"
-        android:background="@color/colorBlack">
+        android:layout_height="@dimen/dp_72"
+        android:background="@color/colorAccent">
 
         <ImageView
             android:id="@+id/back"
@@ -39,35 +40,12 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/bottom_layout"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/content_layout"
-        android:background="@color/colormainbg"
-        android:paddingLeft="@dimen/savebtn_padding"
-        android:paddingRight="@dimen/savebtn_padding">
-
-        <Button
-            android:id="@+id/save"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/login_btn_height"
-            android:layout_alignParentLeft="true"
-            android:layout_marginTop="80dp"
-            android:background="@drawable/login_button"
-            android:text="@string/commit"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/sys_sp4" />
-    </RelativeLayout>
-
-    <ScrollView
-        android:id="@+id/content_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/head_layout"
         android:background="@color/colormainbg">
 
         <LinearLayout
@@ -75,7 +53,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/content_item_height"
                 android:background="@color/colorWhite"
@@ -83,76 +61,36 @@
                 android:paddingRight="@dimen/content_padding">
 
                 <TextView
-                    android:id="@+id/name_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="名称"
+                    android:text="名称:"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/sys_sp4" />
 
                 <EditText
-                    android:id="@+id/name"
+                    android:id="@+id/et_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:background="@null"
-                    android:gravity="right|center_vertical"
+                    android:gravity="center_vertical"
                     android:hint="请输入名称"
                     android:maxLength="50"
                     android:paddingLeft="@dimen/content_padding"
                     android:singleLine="true"
                     android:textSize="@dimen/sys_sp3" />
 
-            </RelativeLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/colorsplit"
-                android:visibility="gone" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/content_item_height"
-                android:background="@color/colorWhite"
-                android:paddingLeft="@dimen/content_padding"
-                android:paddingRight="@dimen/content_padding"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/no_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="编号"
-                    android:textColor="@color/colorBlack"
-                    android:textSize="@dimen/sys_sp4" />
-
-                <EditText
-                    android:id="@+id/no"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@id/no_text"
-                    android:background="@null"
-                    android:gravity="right|center_vertical"
-                    android:hint="请输入编号"
-                    android:maxLength="50"
-                    android:paddingLeft="@dimen/content_padding"
-                    android:singleLine="true"
-                    android:textSize="@dimen/sys_sp3" />
-
-            </RelativeLayout>
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/colorsplit" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/content_item_height"
                 android:background="@color/colorWhite"
@@ -160,37 +98,41 @@
                 android:paddingRight="@dimen/content_padding">
 
                 <TextView
-                    android:id="@+id/loc_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="地址"
+                    android:text="类型:"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/sys_sp4" />
 
-                <EditText
-                    android:id="@+id/location"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tv_type"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@id/loc_text"
                     android:background="@null"
-                    android:gravity="right|center_vertical"
-                    android:hint="请输入地址"
+                    android:gravity="center_vertical"
+                    android:hint="请输入类型"
                     android:maxLength="50"
                     android:paddingLeft="@dimen/content_padding"
                     android:singleLine="true"
                     android:textSize="@dimen/sys_sp3"
                     android:ellipsize="end"/>
-            </RelativeLayout>
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/colorsplit" />
 
-            <RelativeLayout
-                android:id="@+id/tgttype_layout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/content_item_height"
                 android:background="@color/colorWhite"
@@ -198,36 +140,48 @@
                 android:paddingRight="@dimen/content_padding">
 
                 <TextView
-                    android:id="@+id/tgttype_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="类型"
+                    android:text="规模:"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/sys_sp4" />
 
                 <TextView
-                    android:id="@+id/type"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tv_size"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:layout_toRightOf="@id/tgttype_text"
                     android:background="@null"
                     android:focusable="false"
-                    android:gravity="right|center_vertical"
-                    android:hint="请选择类型"
+                    android:gravity="center_vertical"
+                    android:hint="请选择规模"
                     android:maxLength="50"
                     android:paddingLeft="@dimen/content_padding"
                     android:singleLine="true"
                     android:textSize="@dimen/sys_sp3" />
-            </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/iv_inf"
+                    android:padding="@dimen/margin_10_dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_info_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/colorsplit" />
 
-            <RelativeLayout
-                android:id="@+id/grade_layout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/content_item_height"
                 android:background="@color/colorWhite"
@@ -235,29 +189,74 @@
                 android:paddingRight="@dimen/content_padding">
 
                 <TextView
-                    android:id="@+id/grade_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="等级"
+                    android:text="年代:"
                     android:textColor="@color/colorBlack"
                     android:textSize="@dimen/sys_sp4" />
 
                 <TextView
-                    android:id="@+id/grade"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tv_year"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:layout_alignParentBottom="true"
-                    android:layout_toRightOf="@+id/grade_text"
                     android:background="@null"
                     android:focusable="false"
-                    android:gravity="right|center_vertical"
-                    android:hint="请选择等级"
+                    android:gravity="center_vertical"
+                    android:hint="请选择年代"
                     android:maxLength="50"
                     android:paddingLeft="@dimen/content_padding"
                     android:singleLine="true"
                     android:textSize="@dimen/sys_sp3" />
-            </RelativeLayout>
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/colorsplit" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/content_item_height"
+                android:background="@color/colorWhite"
+                android:paddingLeft="@dimen/content_padding"
+                android:paddingRight="@dimen/content_padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="级别:"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="@dimen/sys_sp4" />
+
+                <TextView
+                    android:id="@+id/tv_level"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:focusable="false"
+                    android:gravity="center_vertical"
+                    android:hint="请选择级别"
+                    android:maxLength="50"
+                    android:paddingLeft="@dimen/content_padding"
+                    android:singleLine="true"
+                    android:textSize="@dimen/sys_sp3" />
+
+                <ImageView
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="match_parent"
@@ -272,7 +271,6 @@
                 android:paddingRight="@dimen/content_padding">
 
                 <TextView
-                    android:id="@+id/img_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
@@ -281,7 +279,7 @@
                     android:textSize="@dimen/sys_sp4" />
 
                 <ImageView
-                    android:id="@+id/image"
+                    android:id="@+id/iv_target"
                     android:layout_width="@dimen/media_height"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
@@ -291,10 +289,19 @@
                     android:src="@drawable/target_img" />
             </RelativeLayout>
 
-            <ImageView
+            <Button
+                android:layout_marginRight="@dimen/margin_10_dp"
+                android:layout_marginLeft="@dimen/margin_10_dp"
+                android:id="@+id/btn_save"
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/colorsplit" />
+                android:layout_height="@dimen/login_btn_height"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="80dp"
+                android:background="@drawable/login_button"
+                android:text="@string/commit"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/sys_sp4" />
         </LinearLayout>
+
     </ScrollView>
-</RelativeLayout>
+</LinearLayout>

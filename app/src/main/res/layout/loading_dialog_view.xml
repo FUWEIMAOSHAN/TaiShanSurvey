@@ -8,18 +8,18 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <com.dct.survey.taishan.view.loadingdialog.LVCircularRing
+    <com.dct.survey.taishans.view.loadingdialog.LVCircularRing
         android:id="@+id/lv_circularring"
         android:layout_width="50dp"
         android:layout_height="50dp" />
 
-    <com.dct.survey.taishan.view.loadingdialog.RightDiaView
+    <com.dct.survey.taishans.view.loadingdialog.RightDiaView
         android:id="@+id/rdv_right"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:visibility="gone" />
 
-    <com.dct.survey.taishan.view.loadingdialog.WrongDiaView
+    <com.dct.survey.taishans.view.loadingdialog.WrongDiaView
         android:id="@+id/wv_wrong"
         android:layout_width="50dp"
         android:layout_height="50dp"

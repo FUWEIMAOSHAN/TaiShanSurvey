@@ -6,8 +6,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/feed_back_bottom_height"
-        android:background="@color/colorBlack">
+        android:layout_height="@dimen/dp_72"
+        android:background="@color/colorAccent">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

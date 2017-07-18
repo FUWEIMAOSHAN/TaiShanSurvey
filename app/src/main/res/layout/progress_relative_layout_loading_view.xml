@@ -20,7 +20,7 @@
         android:orientation="horizontal"
         >
 
-        <com.dct.survey.taishan.view.progressactivity.LoadingView
+        <com.dct.survey.taishans.view.progressactivity.LoadingView
             android:layout_width="20dp"
             android:layout_height="20dp" />
 

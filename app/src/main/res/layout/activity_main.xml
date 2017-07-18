@@ -18,10 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:background="@color/colorWhite"
-        app:tl_iconHeight="20dp"
-        app:tl_iconWidth="20dp"
-        app:tl_textSelectColor="@color/colorMainPresstext"
+
+        app:tl_textSelectColor="@color/colorAccent"
         app:tl_textUnselectColor="@color/colorMaintext"
-        app:tl_textsize="14sp"
+        app:tl_textsize="13sp"
         />
 </LinearLayout>
