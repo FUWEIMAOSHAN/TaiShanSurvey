@@ -1,5 +1,6 @@
 package com.dct.survey.taishans.ui.map;
 
+import android.content.Intent;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.dct.survey.taishans.R;
 import com.dct.survey.taishans.base.BaseActivity;
 import com.dct.survey.taishans.bean.DictionaryBean;
@@ -15,6 +19,10 @@ import com.dct.survey.taishans.bean.DictionaryLibrary;
 import com.dct.survey.taishans.dao.DaoManager;
 import com.dct.survey.taishans.dao.DictionaryLibraryDao;
 import com.dct.survey.taishans.ui.adapter.DialogAdapter;
+import com.dct.survey.taishans.utils.PictureSelector.PictureSelector;
+import com.dct.survey.taishans.utils.PictureSelector.config.PictureConfig;
+import com.dct.survey.taishans.utils.PictureSelector.config.PictureMimeType;
+import com.dct.survey.taishans.utils.PictureSelector.entity.LocalMedia;
 import com.dct.survey.taishans.utils.ToastUtil;
 import com.dct.survey.taishans.utils.overscroll.OverScrollDecoratorHelper;
 import com.dct.survey.taishans.view.pickview.OptionsPickerView;
@@ -59,6 +67,7 @@ public class TargetActivity extends BaseActivity {
 
     private DictionaryLibrary dictionaryLibrary;
     private DictionaryBean parentBean;
+    private List<LocalMedia> selectList = new ArrayList<>();
 
     @Override
     protected int getLayout() {
@@ -100,13 +109,54 @@ public class TargetActivity extends BaseActivity {
                 selectLevel();
                 break;
             case R.id.iv_target: //标记点封面照片
-
+                selectImage();
                 break;
             case R.id.btn_save: //保存
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 意图启动后回调方法
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PictureConfig.CHOOSE_REQUEST:// 图片选择结果回调
+                    selectList = PictureSelector.obtainMultipleResult(data);
+                    LocalMedia localMedia = selectList.get(0);
+                    String path = localMedia.getCutPath();
+                    RequestOptions options = new RequestOptions()
+                            .centerCrop()
+                            .placeholder(R.color.color_f6)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL);
+                    Glide.with(this).load(path).apply(options).into(ivTarget);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 选择标记点封面照片
+     */
+    private void selectImage() {
+        PictureSelector.create(this)
+                .openGallery(PictureMimeType.ofImage())
+                .maxSelectNum(1)
+                .selectionMode(PictureConfig.SINGLE)
+                .previewImage(true)
+                .enableCrop(true)
+                .isCamera(true)
+                .rotateEnabled(true)
+                .scaleEnabled(true)
+                .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 
     /**
