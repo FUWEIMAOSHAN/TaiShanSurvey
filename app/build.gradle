@@ -17,6 +17,7 @@ android {
                 cppFlags ""
             }
         }
+        vectorDrawables.useSupportLibrary = true
     }
 
     signingConfigs {

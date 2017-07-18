@@ -177,6 +177,9 @@ public class LoginActivity extends BaseActivity {
                     for (WorkSiteBean workSiteBean : workSiteBeens) {
                         DaoManager.getInstance(LoginActivity.this).getWorkSiteBeanDao().insertOrReplace(workSiteBean);
                     }
+                    WorkSiteBean workSiteBean = workSiteBeens.get(0);
+                    String workSiteGuid = workSiteBean.getGUID();
+                    SpUtil.putString(LoginActivity.this, "workSiteGuid", workSiteGuid);
                 }
             });
         }

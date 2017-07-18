@@ -1,6 +1,7 @@
 package com.dct.survey.taishans.ui.map;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.amap.api.maps.model.LatLng;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -16,6 +18,7 @@ import com.dct.survey.taishans.R;
 import com.dct.survey.taishans.base.BaseActivity;
 import com.dct.survey.taishans.bean.DictionaryBean;
 import com.dct.survey.taishans.bean.DictionaryLibrary;
+import com.dct.survey.taishans.bean.TargetBean;
 import com.dct.survey.taishans.dao.DaoManager;
 import com.dct.survey.taishans.dao.DictionaryLibraryDao;
 import com.dct.survey.taishans.ui.adapter.DialogAdapter;
@@ -23,7 +26,9 @@ import com.dct.survey.taishans.utils.PictureSelector.PictureSelector;
 import com.dct.survey.taishans.utils.PictureSelector.config.PictureConfig;
 import com.dct.survey.taishans.utils.PictureSelector.config.PictureMimeType;
 import com.dct.survey.taishans.utils.PictureSelector.entity.LocalMedia;
+import com.dct.survey.taishans.utils.SpUtil;
 import com.dct.survey.taishans.utils.ToastUtil;
+import com.dct.survey.taishans.utils.UUID;
 import com.dct.survey.taishans.utils.overscroll.OverScrollDecoratorHelper;
 import com.dct.survey.taishans.view.pickview.OptionsPickerView;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -68,6 +73,12 @@ public class TargetActivity extends BaseActivity {
     private DictionaryLibrary dictionaryLibrary;
     private DictionaryBean parentBean;
     private List<LocalMedia> selectList = new ArrayList<>();
+    private DictionaryBean typeBean;
+    private DictionaryBean yearBean;
+    private DictionaryBean gradeBean;
+    private DictionaryBean scaleBean;
+    private LatLng latLng;
+    private String imagePath;
 
     @Override
     protected int getLayout() {
@@ -81,6 +92,8 @@ public class TargetActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        Intent intent = getIntent();
+        latLng = intent.getParcelableExtra("latLng");
         DictionaryLibraryDao dictionaryLibraryDao = DaoManager.getInstance(this).getDictionaryLibraryDao();
         dictionaryLibrary = dictionaryLibraryDao.queryBuilder().build().unique();
     }
@@ -112,9 +125,37 @@ public class TargetActivity extends BaseActivity {
                 selectImage();
                 break;
             case R.id.btn_save: //保存
+                saveTarget();
                 break;
             default:
                 break;
+        }
+    }
+
+    /**
+     * 保存标记点的方法
+     */
+    private void saveTarget() {
+        if (null == typeBean){
+            ToastUtil.showShort(this, "请先选择类型");
+            return;
+        }
+        TargetBean targetBean = new TargetBean();
+        targetBean.setGUID(UUID.getUUID());
+        targetBean.setNAME(etName.getText().toString().trim());
+        targetBean.setSTATE(0);
+        targetBean.setUSERGUID(SpUtil.getString(this, "guid", ""));
+        targetBean.setHSITEGUID(SpUtil.getString(this, "workSiteGuid", ""));
+        if (!TextUtils.isEmpty(imagePath)) targetBean.setIMAGEURL(imagePath);
+        if (null != gradeBean) targetBean.setGRADE(gradeBean.getCODE());
+        if (null != yearBean) targetBean.setYEARS(yearBean.getCODE());
+        if (null != typeBean) targetBean.setTYPE(typeBean.getCODE());
+        if (null != parentBean) targetBean.setTGTTYPE(parentBean.getCODE());
+        if (null != scaleBean) targetBean.setSIZE(scaleBean.getCODE());
+        if (null != latLng) {
+            targetBean.setE(latLng.longitude+"");
+            targetBean.setN(latLng.latitude+"");
+            targetBean.setZ("0");
         }
     }
 
@@ -132,12 +173,12 @@ public class TargetActivity extends BaseActivity {
                 case PictureConfig.CHOOSE_REQUEST:// 图片选择结果回调
                     selectList = PictureSelector.obtainMultipleResult(data);
                     LocalMedia localMedia = selectList.get(0);
-                    String path = localMedia.getCutPath();
+                    imagePath = localMedia.getCutPath();
                     RequestOptions options = new RequestOptions()
                             .centerCrop()
                             .placeholder(R.color.color_f6)
                             .diskCacheStrategy(DiskCacheStrategy.ALL);
-                    Glide.with(this).load(path).apply(options).into(ivTarget);
+                    Glide.with(this).load(imagePath).apply(options).into(ivTarget);
                     break;
             }
         }
@@ -156,6 +197,8 @@ public class TargetActivity extends BaseActivity {
                 .isCamera(true)
                 .rotateEnabled(true)
                 .scaleEnabled(true)
+                .showCropFrame(true)
+                .hideBottomControls(false)
                 .forResult(PictureConfig.CHOOSE_REQUEST);
     }
 
@@ -167,8 +210,8 @@ public class TargetActivity extends BaseActivity {
         OptionsPickerView pickerView = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int option2, int options3, View v) {
-                DictionaryBean yearBean = levelList.get(options1);
-                tvLevel.setText(yearBean.getNAME());
+                gradeBean = levelList.get(options1);
+                tvLevel.setText(gradeBean.getNAME());
             }
         }).setTitleText("级别选择").setContentTextSize(18).build();
 
@@ -184,11 +227,10 @@ public class TargetActivity extends BaseActivity {
         OptionsPickerView pickerView = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int option2, int options3, View v) {
-                DictionaryBean yearBean = yearList.get(options1);
+                yearBean = yearList.get(options1);
                 tvYear.setText(yearBean.getNAME());
             }
         }).setTitleText("年代选择").setContentTextSize(18).build();
-
         pickerView.setPicker(yearList);
         pickerView.show();
     }
@@ -223,8 +265,7 @@ public class TargetActivity extends BaseActivity {
         OptionsPickerView pickerView = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
             @Override
             public void onOptionsSelect(int options1, int option2, int options3, View v) {
-                //返回的分别是三个级别的选中位置
-                DictionaryBean scaleBean = scaleList.get(options1);
+                scaleBean = scaleList.get(options1);
                 tvSize.setText(scaleBean.getNAME());
             }
         }).setTitleText("规模选择").setContentTextSize(18).build();
@@ -251,7 +292,7 @@ public class TargetActivity extends BaseActivity {
             @Override
             public void onOptionsSelect(int options1, int options2, int options3, View v) {
                 parentBean = type1.get(options1);
-                DictionaryBean typeBean = type3.get(options1).get(options2).get(options3);
+                typeBean = type3.get(options1).get(options2).get(options3);
                 tvType.setText(typeBean.getNAME());
             }
         }).setTitleText("类型选择").setContentTextSize(11).build();

@@ -69,12 +69,10 @@
                     android:textSize="@dimen/sys_sp4" />
 
                 <EditText
+                    android:focusable="false"
                     android:id="@+id/et_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:hint="请输入名称"

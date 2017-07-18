@@ -116,9 +116,9 @@
     <style name="picture.default.style" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <!--标题栏背景色-->
-        <item name="colorPrimary">@color/bar_grey</item>
+        <item name="colorPrimary">@color/colorAccent</item>
         <!--状态栏背景色-->
-        <item name="colorPrimaryDark">@color/bar_grey</item>
+        <item name="colorPrimaryDark">@color/colorAccent</item>
         <!--是否改变图片列表界面状态栏字体颜色为黑色-->
         <item name="picture.statusFontColor">false</item>
         <!--返回键图标-->
@@ -132,9 +132,9 @@
         <!--标题栏右边文字-->
         <item name="picture.right.textColor">@color/white</item>
         <!--图片列表勾选样式-->
-        <item name="picture.checked.style">@drawable/checkbox_selector</item>
+        <item name="picture.checked.style">@drawable/checkbox_num_selector</item>
         <!--开启图片列表勾选数字模式-->
-        <item name="picture.style.checkNumMode">false</item>
+        <item name="picture.style.checkNumMode">true</item>
         <!--选择图片样式0/9-->
         <item name="picture.style.numComplete">false</item>
         <!--图片列表底部背景色-->
